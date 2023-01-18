@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { login,register } from '@/pages/api/user';
+import { login,register } from '../../pages/api/user';
 const Cookie = process.client ? require('js-cookie') : undefined
 export default {
   middleware:'notAuthenticated',
@@ -60,7 +60,7 @@ export default {
       user: {
         username: '',
         email: '1119554566@qq.com',
-        password: 'yuyang123!@#'
+        password: ''
       },
       errors: {}
     }
