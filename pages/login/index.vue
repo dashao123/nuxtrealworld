@@ -59,8 +59,8 @@ export default {
     return {
       user: {
         username: '',
-        email: '1119554566@qq.com',
-        password: 'yuyang123!@#'
+        email: '',
+        password: ''
       },
       errors: {}
     }
