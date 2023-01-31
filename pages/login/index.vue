@@ -79,7 +79,7 @@ export default {
         })
 
         //登录存储用户状态
-        console.log(data)
+        //console.log(data)
         this.$store.commit('setUser',data.user)
         //防止浏览器刷新页面数据丢失,需要把数据持久化
         Cookie.set('user',data.user)

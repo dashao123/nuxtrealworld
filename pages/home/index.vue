@@ -40,15 +40,14 @@
                     username: article.author.username
                   }
                 }" class="author">
-                {{ article.author.username }}
-              </nuxt-link>
+                  {{ article.author.username }}
+                </nuxt-link>
                 <span class="date">{{ article.createdAt }}</span>
               </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right" 
-                :class="{
-                  active: article.favorited
-                }">
-                <i class="ion-heart"></i> 
+              <button class="btn btn-outline-primary btn-sm pull-xs-right" :class="{
+                active: article.favorited
+              }">
+                <i class="ion-heart"></i>
                 {{ article.favoritesCount }}
               </button>
             </div>
@@ -63,6 +62,26 @@
               <span>Read more...</span>
             </nuxt-link>
           </div>
+
+          <!-- 分页功能 -->
+          <nav>
+            <ul class="pagination" v-for="item in totalPage" :key="item">
+
+              <li class="page-item" :class={ active: item===page }>
+
+                <!-- a标签,点击会刷新 -->
+                <!-- <a class="page-link" :href="'?page='+item">{{ item }}</a> -->
+                <nuxt-link class="page-link" :to="{
+                  name: 'home',
+                  query: {
+                    page: item
+                  }
+                }">
+                  {{ item }}
+                </nuxt-link>
+              </li>
+            </ul>
+          </nav>
         </div>
 
         <div class="col-md-3">
@@ -70,13 +89,13 @@
             <p>Popular Tags</p>
 
             <div class="tag-list">
-              <a href="" class="label label-pill label-default">programming</a>
-              <a href="" class="label label-pill label-default">javascript</a>
-              <a href="" class="label label-pill label-default">angularjs</a>
-              <a href="" class="label label-pill label-default">react</a>
-              <a href="" class="label label-pill label-default">mean</a>
-              <a href="" class="label label-pill label-default">node</a>
-              <a href="" class="label label-pill label-default">rails</a>
+              <a href="" class="tag-pill tag-default">javascript</a>
+              <a href="" class="tag-pill tag-default">angularjs</a>
+              <a href="" class="tag-pill tag-default">react</a>
+              <a href="" class="tag-pill tag-default">mean</a>
+              <a href="" class="tag-pill tag-default">node</a>
+              <a href="" class="tag-pill tag-default">rails</a>
+              <a href="" class="tag-pill tag-default">programming</a>
             </div>
           </div>
         </div>
@@ -90,27 +109,37 @@
 <script>
 import { getArticles } from '../../pages/api/article';
 export default {
-  
+
   name: 'HomeIndex',
-  async asyncData ( { query } ) {
+  async asyncData({ query }) {
     //分页
-    const limit = 1;
+    const limit = 20;
     const page = Number.parseInt(query.page || 1);
+    //调文章的查询分页的服务
     const { data } = await getArticles({
       limit,
       offset: (page - 1) * limit
     })
     // console.log(11111)
     // console.log(data)
-    
+
     return {
       articles: data.articles,
-      articlesCount: data.articlesCount
+      articlesCount: data.articlesCount,
+      page,
+      limit
     }
-    
+  },
+  watchQuery: ['page'],//监听页码的变化
+  computed: {
+    //总共的页数
+    totalPage () {
+      //分页,向上取整
+      return Math.ceil(this.articlesCount / this.limit)
+    }
   }
 
-  
+
 }
 </script>
 
