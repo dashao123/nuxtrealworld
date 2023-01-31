@@ -15,16 +15,56 @@
           <div class="feed-toggle">
             <ul class="nav nav-pills outline-active">
               <li class="nav-item">
-                <a class="nav-link disabled" href="">Your Feed</a>
+                <nuxt-link v-if="user" class="nav-link" 
+                :class="{
+                  active: tab === 'your_feed'
+                }" 
+                exact
+                :to="{
+                  name: 'home',
+                  query: {
+                    tab: 'your_feed'
+                  }
+                }">
+                  Your Feed
+                </nuxt-link>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" href="">Global Feed</a>
+                <nuxt-link class="nav-link " 
+                :class="{
+                  active: tab === 'global_feed'
+                }" 
+                exact
+                :to="{
+                  name: 'home',
+                  query: {
+                    tab: 'global_feed'
+                  }
+                }">
+                  Global Feed
+                </nuxt-link>
+              </li>
+              <li class="nav-item">
+                <nuxt-link v-if="tag" class="nav-link" 
+                :class="{
+                  active: tab === 'tag'
+                }" 
+                exact 
+                :to="{
+                  name: 'home',
+                  query: {
+                    tab: 'tag',
+                    tag: tag
+                  }
+                }">
+                  #{{ tag }}
+                </nuxt-link>
               </li>
             </ul>
           </div>
 
-          <div class="post-preview" v-for="article in articles" :key="article.slug">
-            <div class="post-meta">
+          <div class="article-preview" v-for="article in articles" :key="article.slug">
+            <div class="article-meta">
               <nuxt-link :to="{
                 name: 'profile',
                 params: {
@@ -67,14 +107,15 @@
           <nav>
             <ul class="pagination" v-for="item in totalPage" :key="item">
 
-              <li class="page-item" :class={ active: item===page }>
+              <li class="page-item" :class="{ active: item === page }">
 
                 <!-- a标签,点击会刷新 -->
                 <!-- <a class="page-link" :href="'?page='+item">{{ item }}</a> -->
                 <nuxt-link class="page-link" :to="{
                   name: 'home',
                   query: {
-                    page: item
+                    page: item,
+                    tag: $route.query.tag
                   }
                 }">
                   {{ item }}
@@ -88,14 +129,17 @@
           <div class="sidebar">
             <p>Popular Tags</p>
 
-            <div class="tag-list">
-              <a href="" class="tag-pill tag-default">javascript</a>
-              <a href="" class="tag-pill tag-default">angularjs</a>
-              <a href="" class="tag-pill tag-default">react</a>
-              <a href="" class="tag-pill tag-default">mean</a>
-              <a href="" class="tag-pill tag-default">node</a>
-              <a href="" class="tag-pill tag-default">rails</a>
-              <a href="" class="tag-pill tag-default">programming</a>
+            <div v-for="tag in tags" :key="tag" class="tag-pill tag-default">
+              <nuxt-link :to="{
+                name:'home',
+                query: {
+                  tag: tag,
+                  tab: 'tag'
+                }
+              }" class="tag-pill tag-default">
+                {{ tag }}
+              </nuxt-link>
+              
             </div>
           </div>
         </div>
@@ -108,6 +152,9 @@
 
 <script>
 import { getArticles } from '../../pages/api/article';
+import { getTags } from '../../pages/api/tag';
+import { mapState } from 'vuex'
+
 export default {
 
   name: 'HomeIndex',
@@ -116,22 +163,43 @@ export default {
     const limit = 20;
     const page = Number.parseInt(query.page || 1);
     //调文章的查询分页的服务
-    const { data } = await getArticles({
-      limit,
-      offset: (page - 1) * limit
-    })
-    // console.log(11111)
+    // const { data } = await getArticles({
+    //   limit,
+    //   offset: (page - 1) * limit
+    // })
+
+    // const { data: tagData } = await getTags()
+
+    const { tag } = query
+
+    //并发执行服务
+    const [articlesRep, tagsRep] = await Promise.all([
+      getArticles({
+        limit,
+        offset: (page - 1) * limit,
+        tag
+      }),
+      getTags()
+    ])
+    const { articles, articlesCount } = articlesRep.data
+    const { tags } = tagsRep.data
+
+    
     // console.log(data)
 
     return {
-      articles: data.articles,
-      articlesCount: data.articlesCount,
+      articles: articles,
+      articlesCount: articlesCount,
       page,
-      limit
+      limit,
+      tags: tags,
+      tag: tag,
+      tab: query.tab || 'global_feed'
     }
   },
-  watchQuery: ['page'],//监听页码的变化
+  watchQuery: ['page','tag','tab'],//监听页码的变化
   computed: {
+    ...mapState(['user']),
     //总共的页数
     totalPage () {
       //分页,向上取整
