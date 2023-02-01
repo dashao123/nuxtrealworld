@@ -115,7 +115,8 @@
                   name: 'home',
                   query: {
                     page: item,
-                    tag: $route.query.tag
+                    tag: $route.query.tag,
+                    tab: tab
                   }
                 }">
                   {{ item }}
@@ -151,14 +152,14 @@
 </template>
 
 <script>
-import { getArticles } from '../../pages/api/article';
+import { getArticles, getFeedArticles } from '../../pages/api/article';
 import { getTags } from '../../pages/api/tag';
 import { mapState } from 'vuex'
 
 export default {
 
   name: 'HomeIndex',
-  async asyncData({ query }) {
+  async asyncData({ query, store }) {
     //分页
     const limit = 20;
     const page = Number.parseInt(query.page || 1);
@@ -171,10 +172,11 @@ export default {
     // const { data: tagData } = await getTags()
 
     const { tag } = query
-
+    const tab = query.tab || 'global_feed'
+    const loadArticles = store.state.user && tab === 'your_feed' ? getFeedArticles : getArticles
     //并发执行服务
     const [articlesRep, tagsRep] = await Promise.all([
-      getArticles({
+      loadArticles({
         limit,
         offset: (page - 1) * limit,
         tag
@@ -194,7 +196,7 @@ export default {
       limit,
       tags: tags,
       tag: tag,
-      tab: query.tab || 'global_feed'
+      tab: tab
     }
   },
   watchQuery: ['page','tag','tab'],//监听页码的变化
