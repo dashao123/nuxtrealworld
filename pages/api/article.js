@@ -1,5 +1,4 @@
-import request from '@/utils/request'
-
+import {request} from '@/plugins/request'
 //获取公共文章列表
 export const getArticles = params => {
     return request({
@@ -15,5 +14,22 @@ export const getFeedArticles = params => {
         method: 'GET',
         url: '/api/articles/feed',
         params
+    })
+}
+
+//点赞
+export const addFavorite = slug => {
+    return request({
+        method: 'POST',
+        url: `/api/articles/${slug}/favorite`
+       
+    })
+}
+//删除点赞
+export const deleFavorite = slug => {
+    return request({
+        method: 'DELETE',
+        url: `/api/articles/${slug}/favorite`
+        
     })
 }
