@@ -42,3 +42,30 @@ export const getArticle = slug => {
         
     })
 }
+
+//获取评论
+export const getComments = slug => {
+    return request({
+        method: 'GET',
+        url: `/api/articles/${slug}/comments`
+        
+    })
+}
+
+//评论文章
+export const postComments = slug => {
+    return request({
+        method: 'POST',
+        url: `/api/articles/${slug}/comments`
+        
+    })
+}
+
+//删除评论文章
+export const deleComments = (slug, id) => {
+    return request({
+        method: 'DELETE',
+        url: `/api/articles/${slug}/comments/${id}`
+        
+    })
+}
