@@ -1,4 +1,4 @@
-import {request} from '@/plugins/request'
+import { request } from '@/plugins/request'
 //获取公共文章列表
 export const getArticles = params => {
     return request({
@@ -22,7 +22,7 @@ export const addFavorite = slug => {
     return request({
         method: 'POST',
         url: `/api/articles/${slug}/favorite`
-       
+
     })
 }
 //删除点赞
@@ -30,7 +30,7 @@ export const deleFavorite = slug => {
     return request({
         method: 'DELETE',
         url: `/api/articles/${slug}/favorite`
-        
+
     })
 }
 
@@ -39,7 +39,7 @@ export const getArticle = slug => {
     return request({
         method: 'GET',
         url: `/api/articles/${slug}`
-        
+
     })
 }
 
@@ -48,16 +48,16 @@ export const getComments = slug => {
     return request({
         method: 'GET',
         url: `/api/articles/${slug}/comments`
-        
+
     })
 }
 
 //评论文章
-export const postComments = slug => {
+export const addComments = (slug, body) => {
     return request({
         method: 'POST',
-        url: `/api/articles/${slug}/comments`
-        
+        url: `/api/articles/${slug}/comments`,
+        data: {'comment': {body}}
     })
 }
 
@@ -66,6 +66,6 @@ export const deleComments = (slug, id) => {
     return request({
         method: 'DELETE',
         url: `/api/articles/${slug}/comments/${id}`
-        
+
     })
 }

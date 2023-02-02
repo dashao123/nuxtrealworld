@@ -26,7 +26,7 @@
             </div>
 
             <!-- 评论区 -->
-            <article-comment :article="article"/>
+            <article-comment :article="article" :user="user" v-if="user"/>
             
 
         </div>
@@ -39,6 +39,7 @@ import { getArticle } from '../api/article'
 import MarkdownIt from 'markdown-it'
 import ArticleMeta from './components/article-meta'
 import ArticleComment from './components/article-comment'
+import { mapState } from 'vuex'
 
 export default {
     name: 'ArticleIndex',
@@ -56,6 +57,9 @@ export default {
         ArticleMeta,
         ArticleComment
     
+    },
+    computed: {
+        ...mapState(['user'])
     },
     //将标题展示在head中
     head() {

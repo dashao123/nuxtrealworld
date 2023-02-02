@@ -6,11 +6,12 @@
 
             <form class="card comment-form">
                 <div class="card-block">
-                    <textarea class="form-control" placeholder="Write a comment..." rows="3"></textarea>
+                    <textarea v-model="body" class="form-control" placeholder="Write a comment..." rows="3"></textarea>
                 </div>
                 <div class="card-footer">
-                    <img :src="article.author.image" />
-                    <button class="btn btn-sm btn-primary" @click="postCommentClick()">
+                    <!-- 当前登录让你的头像 -->
+                    <img :src="user.image" class="comment-author-img"/>
+                    <button class="btn btn-sm btn-primary" @click.prevent="postComment">
                         Post Comment
                     </button>
                 </div>
@@ -22,7 +23,13 @@
                     </p>
                 </div>
                 <div class="card-footer">
-                    <nuxt-link href="" class="comment-author">
+                    <nuxt-link 
+                    :to="{
+                        name: 'profile',
+                        params: {
+                            username: comment.author.username
+                        }
+                    }" class="comment-author">
                         <img :src="comment.author.image" class="comment-author-img" />
                     </nuxt-link>
                     &nbsp;
@@ -45,7 +52,7 @@
 </template>
 
 <script>
-import { getComments,postComments,deleComments } from '../../api/article'
+import { getComments,addComments } from '../../api/article'
 // 评论组件
 export default {
     name: 'ArticleComment',
@@ -54,11 +61,16 @@ export default {
         article: {
             type: Object,
             require: true
+        },
+        user: {
+            type: Object,
+            require: true
         }
     },
     data () {
         return {
-            comments: []
+            comments: [],
+            body: ''
         }
     },
     async mounted () {//客户端渲染  不通过SEO
@@ -68,8 +80,12 @@ export default {
     },
     methods: {
         //评论
-        postCommentClick () {
-            postComments()
+        async postComment (slug, body) {
+            if (body !== '') {
+                console.log(this.body)
+                const {data} = await addComments(this.article.slug, this.body)
+                console.log(data)
+            }
         }
     }
 
