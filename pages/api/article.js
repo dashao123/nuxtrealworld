@@ -69,3 +69,21 @@ export const deleComments = (slug, id) => {
 
     })
 }
+
+//关注
+export const addFollow = (username) => {
+    return request({
+        method: 'POST',
+        url: `/api/profiles/${username}/follow`
+
+    })
+}
+
+//取消关注
+export const deleFollow = (username) => {
+    return request({
+        method: 'DELETE',
+        url: `/api/profiles/${username}/follow`
+
+    })
+}

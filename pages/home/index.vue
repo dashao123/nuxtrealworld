@@ -216,6 +216,11 @@ export default {
   },
   methods: {
     async onFavorite (article) {
+
+      if (!this.user) {
+        return this.$router.push('/login')
+      }
+
       //点赞的过程中，不能再操作了
       article.favoritedDisabled = true
       if (article.favorited) {
