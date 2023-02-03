@@ -43,6 +43,9 @@
                         {{ comment.author.username }}
                     </nuxt-link>
                     <span class="date-posted">{{ comment.createdAt | date('MMM DD, YYYY') }}</span>
+                    <span class="mod-options"  @click="deleComments(comment.id)">
+                        <i class="ion-trash-a"></i>
+                    </span>
                 </div>
             </div>
 
@@ -52,7 +55,7 @@
 </template>
 
 <script>
-import { getComments,addComments } from '../../api/article'
+import { getComments,addComments,deleComments } from '../../api/article'
 // 评论组件
 export default {
     name: 'ArticleComment',
@@ -86,6 +89,15 @@ export default {
                 const {data} = await addComments(this.article.slug, this.body)
                 console.log(data)
             }
+        },
+        //删除评论
+        async deleComments (commentId) {
+            const {data} = await deleComments(this.article.slug, commentId)
+            //console.log(data)
+            if(JSON.stringify(data)==="{}"){
+                this.comments = this.comments.filter(comment => comment.id != commentId)
+            }
+            
         }
     }
 
