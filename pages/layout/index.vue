@@ -34,6 +34,9 @@
                 {{user.username}}
               </nuxt-link>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="javascript:;" @click.prevent="logout">Logout</a>
+            </li>
           </template>
           <template v-else>
             <li class="nav-item">
@@ -73,10 +76,20 @@
 
 <script>
 import { mapState } from 'vuex'
+const Cookie = process.client ? require("js-cookie") : "";
 export default {
   name: 'LayoutIndex',
   computed: {
     ...mapState(['user'])
+  },
+  methods: {
+    logout() {
+      // 删除客户端缓存数据
+      this.$store.commit("setUser", null);
+      // 删除服务端数据持久化
+      Cookie.set("user", null);
+      this.$router.push("/");
+    }
   }
 
 }
