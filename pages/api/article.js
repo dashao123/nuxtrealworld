@@ -87,3 +87,28 @@ export const deleFollow = (username) => {
 
     })
 }
+
+// 发表文章
+export const createArticle = data => {
+    return request({
+        method: 'POST',
+        url: '/api/articles',
+        data
+    })
+}
+  
+  // 删除文章
+export const deleArticle = slug => {
+    return request({
+        method: 'DELETE',
+        url: `/api/articles/${slug}`,
+    })
+}
+// 更新文章详情
+export const updateArticle = (slug, data) => {
+    return request({
+        method: 'PUT',
+        url: `/api/articles/${slug}`,
+        data
+    })
+}

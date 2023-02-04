@@ -14,28 +14,48 @@
       </nuxt-link>
       <span class="date">{{ article.createdAt | date('MMM DD, YYYY') }}</span>
     </div>
-    <button class="btn btn-sm btn-outline-secondary" :class="{
-      active: article.author.following
-    }" :disabled="article.followDisabled" @click="followFavorite(article)">
-      <i class="ion-plus-round"></i>
-      &nbsp;
-      {{ article.author.following ? `Unfollow&nbsp;` : `Follow ` }} {{ article.author.username }}
-    </button>
-    &nbsp;&nbsp;
-    <button class="btn btn-sm btn-outline-primary" :class="{
-      active: article.favorited
-    }" :disabled="article.favoritedDisabled" @click="onFavorite(article)">
-      <i class="ion-heart"></i>
-      &nbsp;
-      {{ article.favorited ? `Unfavorite Article&nbsp;` : `Favorite Article` }}
-      <span v-if="article.favoritesCount > 0" class="counter">({{ article.favoritesCount }})</span>
-    </button>
+    <sapn v-if="!isLoginUser">
+      <button class="btn btn-sm btn-outline-secondary" :class="{
+          active: article.author.following
+        }" :disabled="article.followDisabled" @click="followFavorite(article)">
+        <i class="ion-plus-round"></i>
+        &nbsp;
+        {{ article.author.following ? `Unfollow&nbsp;` : `Follow ` }} {{ article.author.username }}
+      </button>
+      &nbsp;&nbsp;
+      <button class="btn btn-sm btn-outline-primary" :class="{
+          active: article.favorited
+        }" :disabled="article.favoritedDisabled" @click="onFavorite(article)">
+        <i class="ion-heart"></i>
+        &nbsp;
+        {{ article.favorited ? `Unfavorite Article&nbsp;` : `Favorite Article` }}
+        <span v-if="article.favoritesCount > 0" class="counter">({{ article.favoritesCount }})</span>
+      </button>
+    </sapn>
+    <span v-else>
+      <nuxt-link
+        :to="{
+          name:'editor',
+          params:{
+            slug:article.slug
+        }}"
+        exact
+        class="btn btn-sm btn-outline-secondary"
+      >
+        <i class="ion-edit"></i>&nbsp;Edit Article
+      </nuxt-link>
+      <button 
+        :disabled="article.deleDisabled" class="btn btn-outline-danger btn-sm" 
+        @click.prevent="deleArticle(article)">
+        <i class="ion-trash-a"></i>&nbsp;Delete Article
+      </button>
+    </span>
   </div>
 </template>
 
 <script>
 
-import { addFollow, deleFollow, addFavorite, deleFavorite } from '../../api/article'
+import { addFollow, deleFollow, addFavorite, deleFavorite,deleArticle } from '../../api/article'
 import { mapState } from 'vuex'
 
 export default {
@@ -48,7 +68,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user'])
+    ...mapState(['user']),
+    //是否为登录人的文章
+    isLoginUser () {
+      return this.article.author.username === this.user?.username
+    }
   },
   methods: {
     async followFavorite(article) {
@@ -88,6 +112,14 @@ export default {
         article.favoritesCount += 1
       }
       article.favoritedDisabled = false
+    },
+    //删除自己的文章
+    async deleArticle(article) {
+      article.deleDisabled = true
+      await deleArticle(article.slug)
+      console.log(this.$router)
+      this.$router.push('/')
+      article.deleDisabled = false
     }
 
   }
