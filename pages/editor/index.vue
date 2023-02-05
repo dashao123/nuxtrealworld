@@ -84,8 +84,8 @@ export default {
         },
         async publishArticle () {
             const {data} = this.slug ? 
-            await updateArticle(this.slug,this.article) :
-            await createArticle(this.article)
+            await updateArticle(this.slug, {article: this.article}) :
+            await createArticle({article: this.article})
             this.publishDisabled = true
             if (data.article) {
                 this.article = data.article
